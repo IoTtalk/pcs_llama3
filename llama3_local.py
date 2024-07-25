@@ -6,6 +6,7 @@ from vllm.utils import Counter
 from vllm.outputs import RequestOutput
 from vllm import SamplingParams
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast
+import torch
 import gradio as gr
 
 
@@ -60,11 +61,13 @@ class UI:
             yield chunk.outputs[0].text
 
     def launch(self):
-        gr.ChatInterface(self._generate).launch()
+        gr.ChatInterface(self._generate, title="Pcs Llama3").launch(server_name="0.0.0.0", server_port=7680)
 
 
 if __name__ == "__main__":
-    llm = StreamingLLM(model="casperhansen/llama-3-70b-instruct-awq", quantization="AWQ", dtype="float16")
+    torch.cuda.empty_cache()
+    
+    llm = StreamingLLM(model="casperhansen/llama-3-8b-instruct-awq", quantization="AWQ", dtype="float16")
     tokenizer = llm.llm_engine.tokenizer.tokenizer
     sampling_params = SamplingParams(temperature=0.6,
                                      top_p=0.9,

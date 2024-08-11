@@ -63,16 +63,38 @@ class UI:
     def launch(self):
         gr.ChatInterface(self._generate, title="Pcs Llama3").launch(server_name="0.0.0.0", server_port=7680)
 
+llm = None
+tokenizer = None
+sampling_params = None
+
+def get_llm():
+    global llm
+    if llm is None:
+        llm = StreamingLLM(model="casperhansen/llama-3-8b-instruct-awq", quantization="AWQ", dtype="float16")
+    return llm
+
+def get_tokenizer():
+    global tokenizer
+    if tokenizer is None:
+        tokenizer = llm.llm_engine.tokenizer.tokenizer
+    return tokenizer
+
+def get_sampling_params():
+    global sampling_params
+    if sampling_params is None:
+        sampling_params = SamplingParams(temperature=0.6,
+                                         top_p=0.9,
+                                         max_tokens=4096,
+                                         stop_token_ids=[tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
+                                        )
+    return sampling_params
 
 if __name__ == "__main__":
     torch.cuda.empty_cache()
     
-    llm = StreamingLLM(model="casperhansen/llama-3-8b-instruct-awq", quantization="AWQ", dtype="float16")
-    tokenizer = llm.llm_engine.tokenizer.tokenizer
-    sampling_params = SamplingParams(temperature=0.6,
-                                     top_p=0.9,
-                                     max_tokens=4096,
-                                     stop_token_ids=[tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
-                                     )
+    llm = get_llm()
+    tokenizer = get_tokenizer()
+    sampling_params = get_sampling_params()
+    
     ui = UI(llm, tokenizer, sampling_params)
     ui.launch()

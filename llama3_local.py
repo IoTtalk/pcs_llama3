@@ -67,10 +67,10 @@ llm = None
 tokenizer = None
 sampling_params = None
 
-def get_llm():
+def get_llm(model):
     global llm
     if llm is None:
-        llm = StreamingLLM(model="casperhansen/llama-3-8b-instruct-awq", quantization="AWQ", dtype="float16")
+        llm = StreamingLLM(model=model, quantization="AWQ", dtype="float16")
     return llm
 
 def get_tokenizer():
@@ -92,7 +92,7 @@ def get_sampling_params():
 if __name__ == "__main__":
     torch.cuda.empty_cache()
     
-    llm = get_llm()
+    llm = get_llm("meta-llama/Llama-3.1-8B-Instruct")
     tokenizer = get_tokenizer()
     sampling_params = get_sampling_params()
     

@@ -70,7 +70,7 @@ sampling_params = None
 def get_llm(model):
     global llm
     if llm is None:
-        llm = StreamingLLM(model=model, quantization="AWQ", dtype="float16")
+        llm = StreamingLLM(model=model, dtype="float16")
     return llm
 
 def get_tokenizer():

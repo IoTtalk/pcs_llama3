@@ -70,7 +70,7 @@ sampling_params = None
 def get_llm(model):
     global llm
     if llm is None:
-        llm = StreamingLLM(model=model, dtype="float16")
+        llm = StreamingLLM(model=model, dtype="float16", quantization=None)
     return llm
 
 def get_tokenizer():
@@ -79,12 +79,12 @@ def get_tokenizer():
         tokenizer = llm.llm_engine.tokenizer.tokenizer
     return tokenizer
 
-def get_sampling_params():
+def get_sampling_params(temperature=0.6, top_p=0.9, max_tokens=4096):
     global sampling_params
     if sampling_params is None:
-        sampling_params = SamplingParams(temperature=0.6,
-                                         top_p=0.9,
-                                         max_tokens=4096,
+        sampling_params = SamplingParams(temperature=temperature,
+                                         top_p=top_p,
+                                         max_tokens=max_tokens,
                                          stop_token_ids=[tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
                                         )
     return sampling_params
